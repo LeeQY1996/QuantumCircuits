@@ -29,7 +29,7 @@ The package is designed for researchers and developers working on quantum algori
 
 ```julia
 using Pkg
-Pkg.add(url="https://github.com/leeqy1996/QuantumCircuits.jl")
+Pkg.add(url="https://github.com/LeeQY1996/QuantumCircuits")
 ```
 
 ## Quick Example
@@ -104,12 +104,12 @@ graph TD
 
 ## Getting Help
 
-- **GitHub Issues**: [Report bugs or request features](https://github.com/leeqy1996/QuantumCircuits.jl/issues)
-- **Source Code**: [View on GitHub](https://github.com/leeqy1996/QuantumCircuits.jl)
+- **GitHub Issues**: [Report bugs or request features](https://github.com/LeeQY1996/QuantumCircuits/issues)
+- **Source Code**: [View on GitHub](https://github.com/LeeQY1996/QuantumCircuits)
 
 ## Contributing
 
-Contributions are welcome! See the [GitHub repository](https://github.com/leeqy1996/QuantumCircuits.jl) for contribution guidelines.
+Contributions are welcome! See the [GitHub repository](https://github.com/LeeQY1996/QuantumCircuits) for contribution guidelines.
 
 ## License
 
@@ -124,6 +124,6 @@ If you use QuantumCircuits.jl in your research, please cite:
   author = {Guo Chu and contributors},
   title = {QuantumCircuits.jl: A Julia package for quantum computing operations},
   year = {2024},
-  url = {https://github.com/leeqy1996/QuantumCircuits.jl}
+  url = {https://github.com/LeeQY1996/QuantumCircuits}
 }
 ```

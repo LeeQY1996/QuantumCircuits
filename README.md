@@ -1,7 +1,7 @@
 # QuantumCircuits.jl
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://leeqy1996.github.io/QuantumCircuits.jl/)
+[![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://leeqy1996.github.io/QuantumCircuits/)
 [![Julia](https://img.shields.io/badge/Julia-1.6%2B-purple.svg)](https://julialang.org/)
 
 A Julia package for defining and manipulating quantum computing operations, including quantum gates, channels, circuits, and Hamiltonians.
@@ -56,7 +56,7 @@ To install QuantumCircuits.jl from GitHub:
 
 ```julia
 using Pkg
-Pkg.add(url="https://github.com/leeqy1996/QuantumCircuits.jl")
+Pkg.add(url="https://github.com/LeeQY1996/QuantumCircuits")
 ```
 
 Or add it to your project's `Project.toml`:
@@ -149,7 +149,7 @@ reset_parameters!(gate)        # Reset to initial values
 
 ## Documentation
 
-Full documentation is available at [https://leeqy1996.github.io/QuantumCircuits.jl/](https://leeqy1996.github.io/QuantumCircuits.jl/).
+Full documentation is available at [https://leeqy1996.github.io/QuantumCircuits/](https://leeqy1996.github.io/QuantumCircuits/).
 
 The documentation includes:
 - API reference for all exported functions and types
@@ -223,8 +223,8 @@ Contributions are welcome! Please follow these steps:
 ### Development Setup
 
 ```bash
-git clone https://github.com/leeqy1996/QuantumCircuits.jl.git
-cd QuantumCircuits.jl
+git clone https://github.com/LeeQY1996/QuantumCircuits.git
+cd QuantumCircuits
 julia --project=.
 ```
 
@@ -257,7 +257,7 @@ If you use QuantumCircuits.jl in your research, please cite:
   author = {Guo Chu and contributors},
   title = {QuantumCircuits.jl: A Julia package for quantum computing operations},
   year = {2024},
-  url = {https://github.com/leeqy1996/QuantumCircuits.jl}
+  url = {https://github.com/LeeQY1996/QuantumCircuits}
 }
 ```
 
@@ -270,5 +270,5 @@ If you use QuantumCircuits.jl in your research, please cite:
 ## Contact
 
 For questions, issues, or feature requests:
-- Open an issue on [GitHub](https://github.com/leeqy1996/QuantumCircuits.jl/issues)
+- Open an issue on [GitHub](https://github.com/LeeQY1996/QuantumCircuits/issues)
 - Contact the maintainer: Guo Chu <guochu604b@gmail.com>
