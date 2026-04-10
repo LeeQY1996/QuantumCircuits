@@ -32,8 +32,40 @@ const CircuitElement = Union{QuantumCircuit, Gate, AbstractQuantumMap}
 
 
 """
-	struct QCircuit <: QuantumOperation
-	Quantum Circuit
+    QCircuit <: QuantumCircuit
+
+A quantum circuit representing a sequence of quantum operations (gates, channels, measurements, or subcircuits).
+
+# Fields
+- `operations::Vector{CircuitElement}`: Sequence of quantum operations.
+
+# Constructors
+```julia
+QCircuit()  # Create empty circuit
+QCircuit(ops)  # Create circuit from array of operations
+QCircuit(circuit::QCircuit)  # Copy constructor
+```
+
+# Examples
+```julia
+# Create empty circuit
+circuit = QCircuit()
+
+# Add operations
+push!(circuit, HGate(1))
+push!(circuit, CNOTGate(1, 2))
+push!(circuit, AmplitudeDamping(1, γ=0.1))
+
+# Create from array
+ops = [XGate(1), YGate(2), ZGate(3)]
+circuit2 = QCircuit(ops)
+```
+
+# See also
+- [`push!`](@ref): Add operation to circuit.
+- [`append!`](@ref): Append operations to circuit.
+- [`QMeasure`](@ref): Measurement operation.
+- [`QSelect`](@ref): Post-selection operation.
 """
 struct QCircuit <: QuantumCircuit
 	operations::Vector{CircuitElement}
@@ -61,9 +93,55 @@ Base.reverse(x::QCircuit) = QCircuit(reverse(x.operations))
 Base.:*(x::QCircuit, y::QCircuit) = QCircuit(vcat(y.operations, x.operations))
 Base.adjoint(x::QCircuit) = QCircuit(adjoint.(Iterators.reverse(x.operations)))
 
+"""
+    push!(circuit::QCircuit, operation::CircuitElement) -> QCircuit
+
+Add a quantum operation to the end of a circuit.
+
+# Arguments
+- `circuit::QCircuit`: The quantum circuit.
+- `operation::CircuitElement`: Operation to add (Gate, AbstractQuantumMap, QMeasure, QSelect, or QCircuit).
+
+# Returns
+- `QCircuit`: The modified circuit (mutated in-place).
+
+# Examples
+```julia
+circuit = QCircuit()
+push!(circuit, HGate(1))          # Add Hadamard gate
+push!(circuit, CNOTGate(1, 2))    # Add CNOT gate
+push!(circuit, QMeasure([1, 2]))  # Add measurement
+```
+
+# See also
+- [`append!`](@ref): Append multiple operations.
+"""
 Base.push!(x::QCircuit, s::CircuitElement) = push!(x.operations, s)
 # Base.push!(x::QCircuit, s::QCircuit) = push!(x.operations, s)
 Base.append!(x::QCircuit, s::Vector{<:CircuitElement}) = append!(x.operations, s)
+"""
+    append!(circuit::QCircuit, other::QCircuit) -> QCircuit
+
+Append all operations from another circuit to the end of this circuit.
+
+# Arguments
+- `circuit::QCircuit`: The quantum circuit to append to.
+- `other::QCircuit`: Another quantum circuit whose operations will be appended.
+
+# Returns
+- `QCircuit`: The modified circuit (mutated in-place).
+
+# Examples
+```julia
+circuit1 = QCircuit([HGate(1), CNOTGate(1, 2)])
+circuit2 = QCircuit([XGate(3), YGate(4)])
+append!(circuit1, circuit2)  # circuit1 now contains all four operations
+```
+
+# See also
+- [`push!`](@ref): Add single operation.
+- [`append!(circuit::QCircuit, ops::Vector)`](@ref): Append array of operations.
+"""
 Base.append!(x::QCircuit, s::QCircuit) = append!(x.operations, s.operations)
 Base.push!(x::QCircuit, s::Tuple{Int, <:AbstractMatrix}) = push!(x, gate(s[1], s[2]))
 Base.push!(x::QCircuit, s::Tuple{NTuple{N, Int}, <:AbstractMatrix}) where N = push!(x, gate(s[1], s[2]))
