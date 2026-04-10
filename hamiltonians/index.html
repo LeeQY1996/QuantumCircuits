@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Hamiltonians · QuantumCircuits.jl</title><script data-outdated-warner src="../assets/warner.js"></script><link rel="canonical" href="https://leeqy1996.github.io/QuantumCircuits/hamiltonians/"/><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/favicon.ico" rel="icon" type="image/x-icon"/></head><body><div id="documenter"><nav class="docs-sidebar"><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../gates/">Gates</a></li><li><a class="tocitem" href="../channels/">Channels</a></li><li><a class="tocitem" href="../circuits/">Circuits</a></li><li class="is-active"><a class="tocitem" href>Hamiltonians</a><ul class="internal"><li><a class="tocitem" href="#Hamiltonian-Representation"><span>Hamiltonian Representation</span></a></li><li><a class="tocitem" href="#Basic-Operations"><span>Basic Operations</span></a></li><li><a class="tocitem" href="#Matrix-Representation"><span>Matrix Representation</span></a></li><li><a class="tocitem" href="#Hamiltonian-Simplification"><span>Hamiltonian Simplification</span></a></li><li><a class="tocitem" href="#Common-Hamiltonian-Models"><span>Common Hamiltonian Models</span></a></li><li><a class="tocitem" href="#Hamiltonian-Analysis"><span>Hamiltonian Analysis</span></a></li><li><a class="tocitem" href="#API-Reference"><span>API Reference</span></a></li></ul></li><li><a class="tocitem" href="../api/">API Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Hamiltonians</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Hamiltonians</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/LeeQY1996/QuantumCircuits/blob/master/docs/src/hamiltonians.md#" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Qubit-Hamiltonians"><a class="docs-heading-anchor" href="#Qubit-Hamiltonians">Qubit Hamiltonians</a><a id="Qubit-Hamiltonians-1"></a><a class="docs-heading-anchor-permalink" href="#Qubit-Hamiltonians" title="Permalink"></a></h1><p>Qubit Hamiltonians represent physical systems in quantum mechanics as sums of local operators. QuantumCircuits.jl provides algebraic tools for working with qubit Hamiltonians through the <code>QubitsTerm</code> and <code>QubitsOperator</code> types.</p><h2 id="Hamiltonian-Representation"><a class="docs-heading-anchor" href="#Hamiltonian-Representation">Hamiltonian Representation</a><a id="Hamiltonian-Representation-1"></a><a class="docs-heading-anchor-permalink" href="#Hamiltonian-Representation" title="Permalink"></a></h2><h3 id="QubitsTerm"><a class="docs-heading-anchor" href="#QubitsTerm">QubitsTerm</a><a id="QubitsTerm-1"></a><a class="docs-heading-anchor-permalink" href="#QubitsTerm" title="Permalink"></a></h3><p>A <code>QubitsTerm</code> represents a single term in a Hamiltonian:</p><pre><code class="nohighlight hljs">c * σ₁ ⊗ σ₂ ⊗ ... ⊗ σₙ</code></pre><p>where <code>c</code> is a coefficient and each <code>σᵢ</code> is a Pauli operator (I, X, Y, Z).</p><pre><code class="language-julia hljs"># Create a single term: 0.5 * X₁ ⊗ Z₂
+term1 = QubitsTerm(Dict(1=&gt;&quot;X&quot;, 2=&gt;&quot;Z&quot;), coeff=0.5)
+
+# Another term: -0.3 * Y₂ ⊗ X₃
+term2 = QubitsTerm(Dict(2=&gt;&quot;Y&quot;, 3=&gt;&quot;X&quot;), coeff=-0.3)
+
+# Identity term: 1.0 * I (on all qubits implicitly)
+identity_term = QubitsTerm(Dict{Int,String}(), coeff=1.0)</code></pre><h3 id="QubitsOperator"><a class="docs-heading-anchor" href="#QubitsOperator">QubitsOperator</a><a id="QubitsOperator-1"></a><a class="docs-heading-anchor-permalink" href="#QubitsOperator" title="Permalink"></a></h3><p>A <code>QubitsOperator</code> represents a sum of <code>QubitsTerm</code> objects:</p><pre><code class="language-julia hljs"># Create operator from individual terms
+operator = QubitsOperator([term1, term2])
+
+# Create operator directly
+operator2 = QubitsOperator([
+    (Dict(1=&gt;&quot;X&quot;, 2=&gt;&quot;Z&quot;), 0.5),
+    (Dict(2=&gt;&quot;Y&quot;, 3=&gt;&quot;X&quot;), -0.3)
+])</code></pre><h2 id="Basic-Operations"><a class="docs-heading-anchor" href="#Basic-Operations">Basic Operations</a><a id="Basic-Operations-1"></a><a class="docs-heading-anchor-permalink" href="#Basic-Operations" title="Permalink"></a></h2><h3 id="Term-Inspection"><a class="docs-heading-anchor" href="#Term-Inspection">Term Inspection</a><a id="Term-Inspection-1"></a><a class="docs-heading-anchor-permalink" href="#Term-Inspection" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Get coefficient
+c = coeff(term)  # Returns 0.5 for term1
+
+# Get operator list
+ops = oplist(term)  # Returns Dict(1=&gt;&quot;X&quot;, 2=&gt;&quot;Z&quot;)
+
+# Get qubits involved in term
+qubits = collect(keys(oplist(term)))  # [1, 2]
+
+# Get Pauli string representation
+function pauli_string(term::QubitsTerm, n::Int)
+    str = &quot;&quot;
+    for q in 1:n
+        if haskey(term.oplist, q)
+            str *= term.oplist[q]
+        else
+            str *= &quot;I&quot;
+        end
+    end
+    return str
+end</code></pre><h3 id="Algebraic-Operations"><a class="docs-heading-anchor" href="#Algebraic-Operations">Algebraic Operations</a><a id="Algebraic-Operations-1"></a><a class="docs-heading-anchor-permalink" href="#Algebraic-Operations" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Addition
+term_a = QubitsTerm(Dict(1=&gt;&quot;X&quot;), coeff=0.5)
+term_b = QubitsTerm(Dict(1=&gt;&quot;X&quot;), coeff=0.3)
+operator_sum = QubitsOperator([term_a]) + QubitsOperator([term_b])
+# Result: 0.8 * X₁
+
+# Scalar multiplication
+operator = QubitsOperator([QubitsTerm(Dict(1=&gt;&quot;Z&quot;), coeff=1.0)])
+scaled = 2.5 * operator  # 2.5 * Z₁
+
+# Adjoint (complex conjugate)
+term_complex = QubitsTerm(Dict(1=&gt;&quot;Y&quot;), coeff=1.0+2.0im)
+adjoint_term = adjoint(term_complex)  # (1.0-2.0im) * Y₁
+
+# Operator addition and subtraction
+op1 = QubitsOperator([QubitsTerm(Dict(1=&gt;&quot;X&quot;), coeff=1.0)])
+op2 = QubitsOperator([QubitsTerm(Dict(2=&gt;&quot;Z&quot;), coeff=2.0)])
+op_sum = op1 + op2  # X₁ + 2Z₂
+op_diff = op1 - op2  # X₁ - 2Z₂</code></pre><h2 id="Matrix-Representation"><a class="docs-heading-anchor" href="#Matrix-Representation">Matrix Representation</a><a id="Matrix-Representation-1"></a><a class="docs-heading-anchor-permalink" href="#Matrix-Representation" title="Permalink"></a></h2><h3 id="Generating-Matrices"><a class="docs-heading-anchor" href="#Generating-Matrices">Generating Matrices</a><a id="Generating-Matrices-1"></a><a class="docs-heading-anchor-permalink" href="#Generating-Matrices" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Generate matrix for a single term
+term = QubitsTerm(Dict(1=&gt;&quot;X&quot;, 2=&gt;&quot;Z&quot;), coeff=0.5)
+term_matrix = matrix(term, n=3)  # 8×8 sparse matrix for 3-qubit system
+
+# Generate matrix for an operator
+operator = QubitsOperator([
+    QubitsTerm(Dict(1=&gt;&quot;X&quot;), coeff=1.0),
+    QubitsTerm(Dict(2=&gt;&quot;Z&quot;), coeff=2.0)
+])
+operator_matrix = matrix(operator, n=3)  # X₁ + 2Z₂ on 3-qubit system
+
+# Using dense matrices (for small systems)
+dense_matrix = Matrix(matrix(operator, n=3))</code></pre><h3 id="Matrix-Properties"><a class="docs-heading-anchor" href="#Matrix-Properties">Matrix Properties</a><a id="Matrix-Properties-1"></a><a class="docs-heading-anchor-permalink" href="#Matrix-Properties" title="Permalink"></a></h3><pre><code class="language-julia hljs">using LinearAlgebra
+
+# Check if Hamiltonian is Hermitian
+H = matrix(operator, n=3)
+is_hermitian = isapprox(H, H&#39;)  # Should be true for physical Hamiltonians
+
+# Compute eigenvalues (for small systems)
+eigvals_H = eigen(Matrix(H)).values
+
+# Check trace
+trace_H = tr(Matrix(H))</code></pre><h2 id="Hamiltonian-Simplification"><a class="docs-heading-anchor" href="#Hamiltonian-Simplification">Hamiltonian Simplification</a><a id="Hamiltonian-Simplification-1"></a><a class="docs-heading-anchor-permalink" href="#Hamiltonian-Simplification" title="Permalink"></a></h2><h3 id="Combining-Like-Terms"><a class="docs-heading-anchor" href="#Combining-Like-Terms">Combining Like Terms</a><a id="Combining-Like-Terms-1"></a><a class="docs-heading-anchor-permalink" href="#Combining-Like-Terms" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Create operator with duplicate terms
+operator = QubitsOperator([
+    QubitsTerm(Dict(1=&gt;&quot;X&quot;, 2=&gt;&quot;Z&quot;), coeff=0.5),
+    QubitsTerm(Dict(1=&gt;&quot;X&quot;, 2=&gt;&quot;Z&quot;), coeff=0.3),
+    QubitsTerm(Dict(2=&gt;&quot;Y&quot;), coeff=1.0),
+    QubitsTerm(Dict(2=&gt;&quot;Y&quot;), coeff=-0.5)
+])
+
+# Simplify combines like terms
+simplified = simplify(operator)
+# Result: 0.8 * X₁Z₂ + 0.5 * Y₂</code></pre><h3 id="Commutation-Relations"><a class="docs-heading-anchor" href="#Commutation-Relations">Commutation Relations</a><a id="Commutation-Relations-1"></a><a class="docs-heading-anchor-permalink" href="#Commutation-Relations" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Check if two terms commute
+function commutes(term1::QubitsTerm, term2::QubitsTerm)
+    # Two Pauli terms commute if they have an even number of
+    # non-commuting pairs at the same qubit positions
+    non_commuting_pairs = 0
+    
+    for (q, op1) in term1.oplist
+        if haskey(term2.oplist, q)
+            op2 = term2.oplist[q]
+            # Check if ops at same qubit commute
+            if (op1 == &quot;X&quot; &amp;&amp; op2 == &quot;Y&quot;) || (op1 == &quot;Y&quot; &amp;&amp; op2 == &quot;Z&quot;) ||
+               (op1 == &quot;Z&quot; &amp;&amp; op2 == &quot;X&quot;) || (op1 == &quot;Y&quot; &amp;&amp; op2 == &quot;X&quot;) ||
+               (op1 == &quot;Z&quot; &amp;&amp; op2 == &quot;Y&quot;) || (op1 == &quot;X&quot; &amp;&amp; op2 == &quot;Z&quot;)
+                non_commuting_pairs += 1
+            end
+        end
+    end
+    
+    return iseven(non_commuting_pairs)
+end</code></pre><h2 id="Common-Hamiltonian-Models"><a class="docs-heading-anchor" href="#Common-Hamiltonian-Models">Common Hamiltonian Models</a><a id="Common-Hamiltonian-Models-1"></a><a class="docs-heading-anchor-permalink" href="#Common-Hamiltonian-Models" title="Permalink"></a></h2><h3 id="Transverse-Field-Ising-Model"><a class="docs-heading-anchor" href="#Transverse-Field-Ising-Model">Transverse Field Ising Model</a><a id="Transverse-Field-Ising-Model-1"></a><a class="docs-heading-anchor-permalink" href="#Transverse-Field-Ising-Model" title="Permalink"></a></h3><pre><code class="language-julia hljs">function transverse_field_ising(n::Int, J::Real, h::Real)
+    terms = QubitsTerm[]
+    
+    # ZZ interactions
+    for i in 1:(n-1)
+        push!(terms, QubitsTerm(Dict(i=&gt;&quot;Z&quot;, i+1=&gt;&quot;Z&quot;), coeff=J))
+    end
+    
+    # Transverse field (X)
+    for i in 1:n
+        push!(terms, QubitsTerm(Dict(i=&gt;&quot;X&quot;), coeff=h))
+    end
+    
+    return QubitsOperator(terms)
+end
+
+# Example: 4-qubit TFIM
+tfim = transverse_field_ising(4, 1.0, 0.5)</code></pre><h3 id="Heisenberg-Model"><a class="docs-heading-anchor" href="#Heisenberg-Model">Heisenberg Model</a><a id="Heisenberg-Model-1"></a><a class="docs-heading-anchor-permalink" href="#Heisenberg-Model" title="Permalink"></a></h3><pre><code class="language-julia hljs">function heisenberg_model(n::Int, Jx::Real, Jy::Real, Jz::Real)
+    terms = QubitsTerm[]
+    
+    for i in 1:(n-1)
+        # XX interaction
+        if Jx != 0
+            push!(terms, QubitsTerm(Dict(i=&gt;&quot;X&quot;, i+1=&gt;&quot;X&quot;), coeff=Jx))
+        end
+        
+        # YY interaction
+        if Jy != 0
+            push!(terms, QubitsTerm(Dict(i=&gt;&quot;Y&quot;, i+1=&gt;&quot;Y&quot;), coeff=Jy))
+        end
+        
+        # ZZ interaction
+        if Jz != 0
+            push!(terms, QubitsTerm(Dict(i=&gt;&quot;Z&quot;, i+1=&gt;&quot;Z&quot;), coeff=Jz))
+        end
+    end
+    
+    return QubitsOperator(terms)
+end
+
+# Example: XXX model (Jx = Jy = Jz = 1.0)
+heisenberg = heisenberg_model(4, 1.0, 1.0, 1.0)</code></pre><h3 id="Hubbard-Model-(in-qubit-representation)"><a class="docs-heading-anchor" href="#Hubbard-Model-(in-qubit-representation)">Hubbard Model (in qubit representation)</a><a id="Hubbard-Model-(in-qubit-representation)-1"></a><a class="docs-heading-anchor-permalink" href="#Hubbard-Model-(in-qubit-representation)" title="Permalink"></a></h3><pre><code class="language-julia hljs">function hubbard_model(n_sites::Int, t::Real, U::Real)
+    # Simplified qubit representation (Jordan-Wigner transformed)
+    terms = QubitsTerm[]
+    
+    # Hopping terms (simplified representation)
+    for i in 1:(n_sites-1)
+        # Spin-up hopping
+        push!(terms, QubitsTerm(Dict(i=&gt;&quot;X&quot;, i+1=&gt;&quot;X&quot;), coeff=-t))
+        push!(terms, QubitsTerm(Dict(i=&gt;&quot;Y&quot;, i+1=&gt;&quot;Y&quot;), coeff=-t))
+        
+        # Spin-down hopping (offset by n_sites)
+        push!(terms, QubitsTerm(Dict(i+n_sites=&gt;&quot;X&quot;, i+1+n_sites=&gt;&quot;X&quot;), coeff=-t))
+        push!(terms, QubitsTerm(Dict(i+n_sites=&gt;&quot;Y&quot;, i+1+n_sites=&gt;&quot;Y&quot;), coeff=-t))
+    end
+    
+    # On-site interaction
+    for i in 1:n_sites
+        # n_up * n_down ≈ Z_i Z_{i+n_sites} term (simplified)
+        push!(terms, QubitsTerm(Dict(i=&gt;&quot;Z&quot;, i+n_sites=&gt;&quot;Z&quot;), coeff=U/4))
+    end
+    
+    return QubitsOperator(terms)
+end
+
+# Example: 2-site Hubbard model
+hubbard = hubbard_model(2, 1.0, 4.0)</code></pre><h2 id="Hamiltonian-Analysis"><a class="docs-heading-anchor" href="#Hamiltonian-Analysis">Hamiltonian Analysis</a><a id="Hamiltonian-Analysis-1"></a><a class="docs-heading-anchor-permalink" href="#Hamiltonian-Analysis" title="Permalink"></a></h2><h3 id="Expectation-Values"><a class="docs-heading-anchor" href="#Expectation-Values">Expectation Values</a><a id="Expectation-Values-1"></a><a class="docs-heading-anchor-permalink" href="#Expectation-Values" title="Permalink"></a></h3><pre><code class="language-julia hljs">function expectation_value(operator::QubitsOperator, state::Vector{ComplexF64}, n::Int)
+    # Compute ⟨ψ|H|ψ⟩
+    H = matrix(operator, n=n)
+    return dot(state, H * state)
+end
+
+# Example usage
+n_qubits = 3
+H = transverse_field_ising(n_qubits, 1.0, 0.5)
+ψ = randn(ComplexF64, 2^n_qubits)
+ψ /= norm(ψ)
+energy = expectation_value(H, ψ, n_qubits)</code></pre><h3 id="Ground-State-Approximation"><a class="docs-heading-anchor" href="#Ground-State-Approximation">Ground State Approximation</a><a id="Ground-State-Approximation-1"></a><a class="docs-heading-anchor-permalink" href="#Ground-State-Approximation" title="Permalink"></a></h3><pre><code class="language-julia hljs">using LinearAlgebra
+
+function ground_state_energy(operator::QubitsOperator, n::Int; k::Int=1)
+    # Compute k smallest eigenvalues
+    H = Matrix(matrix(operator, n=n))
+    eigvals = eigen(H).values
+    return eigvals[1:k]
+end
+
+# Example: Find ground state of TFIM
+tfim = transverse_field_ising(4, 1.0, 0.5)
+gs_energies = ground_state_energy(tfim, 4, k=3)
+println(&quot;Ground state energy: &quot;, gs_energies[1])
+println(&quot;First excited state: &quot;, gs_energies[2])</code></pre><h2 id="API-Reference"><a class="docs-heading-anchor" href="#API-Reference">API Reference</a><a id="API-Reference-1"></a><a class="docs-heading-anchor-permalink" href="#API-Reference" title="Permalink"></a></h2><div class="admonition is-warning"><header class="admonition-header">Missing docstring.</header><div class="admonition-body"><p>Missing docstring for <code>QubitsTerm</code>. Check Documenter&#39;s build log for details.</p></div></div><div class="admonition is-warning"><header class="admonition-header">Missing docstring.</header><div class="admonition-body"><p>Missing docstring for <code>QubitsOperator</code>. Check Documenter&#39;s build log for details.</p></div></div><div class="admonition is-warning"><header class="admonition-header">Missing docstring.</header><div class="admonition-body"><p>Missing docstring for <code>oplist</code>. Check Documenter&#39;s build log for details.</p></div></div><div class="admonition is-warning"><header class="admonition-header">Missing docstring.</header><div class="admonition-body"><p>Missing docstring for <code>coeff</code>. Check Documenter&#39;s build log for details.</p></div></div><div class="admonition is-warning"><header class="admonition-header">Missing docstring.</header><div class="admonition-body"><p>Missing docstring for <code>matrix</code>. Check Documenter&#39;s build log for details.</p></div></div><div class="admonition is-warning"><header class="admonition-header">Missing docstring.</header><div class="admonition-body"><p>Missing docstring for <code>simplify</code>. Check Documenter&#39;s build log for details.</p></div></div><h3 id="Algebraic-Operations-2"><a class="docs-heading-anchor" href="#Algebraic-Operations-2">Algebraic Operations</a><a class="docs-heading-anchor-permalink" href="#Algebraic-Operations-2" title="Permalink"></a></h3><div class="admonition is-warning"><header class="admonition-header">Missing docstring.</header><div class="admonition-body"><p>Missing docstring for <code>Base.:+(::QubitsOperator, ::QubitsOperator)</code>. Check Documenter&#39;s build log for details.</p></div></div><div class="admonition is-warning"><header class="admonition-header">Missing docstring.</header><div class="admonition-body"><p>Missing docstring for <code>Base.:-(::QubitsOperator, ::QubitsOperator)</code>. Check Documenter&#39;s build log for details.</p></div></div><div class="admonition is-warning"><header class="admonition-header">Missing docstring.</header><div class="admonition-body"><p>Missing docstring for <code>Base.:*(::Real, ::QubitsOperator)</code>. Check Documenter&#39;s build log for details.</p></div></div><div class="admonition is-warning"><header class="admonition-header">Missing docstring.</header><div class="admonition-body"><p>Missing docstring for <code>Base.:*(::Complex, ::QubitsOperator)</code>. Check Documenter&#39;s build log for details.</p></div></div><div class="admonition is-warning"><header class="admonition-header">Missing docstring.</header><div class="admonition-body"><p>Missing docstring for <code>Base.adjoint(::QubitsTerm)</code>. Check Documenter&#39;s build log for details.</p></div></div><div class="admonition is-warning"><header class="admonition-header">Missing docstring.</header><div class="admonition-body"><p>Missing docstring for <code>Base.adjoint(::QubitsOperator)</code>. Check Documenter&#39;s build log for details.</p></div></div></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../circuits/">« Circuits</a><a class="docs-footer-nextpage" href="../api/">API Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.25 on <span class="colophon-date" title="Friday 10 April 2026 19:13">Friday 10 April 2026</span>. Using Julia version 1.6.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

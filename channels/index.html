@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Channels · QuantumCircuits.jl</title><script data-outdated-warner src="../assets/warner.js"></script><link rel="canonical" href="https://leeqy1996.github.io/QuantumCircuits/channels/"/><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/favicon.ico" rel="icon" type="image/x-icon"/></head><body><div id="documenter"><nav class="docs-sidebar"><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../gates/">Gates</a></li><li class="is-active"><a class="tocitem" href>Channels</a><ul class="internal"><li><a class="tocitem" href="#Channel-Types"><span>Channel Types</span></a></li><li><a class="tocitem" href="#Generic-Quantum-Maps"><span>Generic Quantum Maps</span></a></li><li><a class="tocitem" href="#Predefined-Noise-Models"><span>Predefined Noise Models</span></a></li><li><a class="tocitem" href="#Channel-Operations"><span>Channel Operations</span></a></li><li><a class="tocitem" href="#Mathematical-Background"><span>Mathematical Background</span></a></li><li><a class="tocitem" href="#Examples"><span>Examples</span></a></li><li><a class="tocitem" href="#API-Reference"><span>API Reference</span></a></li></ul></li><li><a class="tocitem" href="../circuits/">Circuits</a></li><li><a class="tocitem" href="../hamiltonians/">Hamiltonians</a></li><li><a class="tocitem" href="../api/">API Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Channels</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Channels</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/LeeQY1996/QuantumCircuits/blob/master/docs/src/channels.md#" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Quantum-Channels"><a class="docs-heading-anchor" href="#Quantum-Channels">Quantum Channels</a><a id="Quantum-Channels-1"></a><a class="docs-heading-anchor-permalink" href="#Quantum-Channels" title="Permalink"></a></h1><p>Quantum channels (also known as quantum operations or completely positive trace-preserving maps) represent general quantum evolution, including noise and decoherence. QuantumCircuits.jl provides both generic quantum maps and specific noise models.</p><h2 id="Channel-Types"><a class="docs-heading-anchor" href="#Channel-Types">Channel Types</a><a id="Channel-Types-1"></a><a class="docs-heading-anchor-permalink" href="#Channel-Types" title="Permalink"></a></h2><p>The package defines an abstract type hierarchy for quantum channels:</p><div class="mermaid">
+graph TD
+    A[AbstractQuantumMap] --> B[QuantumMap]
+    A --> C[AmplitudeDamping]
+    A --> D[PhaseDamping]
+    A --> E[Depolarizing]
+</div><h2 id="Generic-Quantum-Maps"><a class="docs-heading-anchor" href="#Generic-Quantum-Maps">Generic Quantum Maps</a><a id="Generic-Quantum-Maps-1"></a><a class="docs-heading-anchor-permalink" href="#Generic-Quantum-Maps" title="Permalink"></a></h2><h3 id="Creating-Generic-Channels"><a class="docs-heading-anchor" href="#Creating-Generic-Channels">Creating Generic Channels</a><a id="Creating-Generic-Channels-1"></a><a class="docs-heading-anchor-permalink" href="#Creating-Generic-Channels" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Create a generic quantum map from Kraus operators
+using LinearAlgebra
+
+# Example: Bit flip channel with probability p
+p = 0.1
+k1 = sqrt(1-p) * [1 0; 0 1]  # √(1-p) * I
+k2 = sqrt(p) * [0 1; 1 0]    # √p * X
+
+kraus_ops = [k1, k2]
+generic_channel = QuantumMap(kraus_ops, [1])  # Channel acting on qubit 1</code></pre><h3 id="Channel-Properties"><a class="docs-heading-anchor" href="#Channel-Properties">Channel Properties</a><a id="Channel-Properties-1"></a><a class="docs-heading-anchor-permalink" href="#Channel-Properties" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Check if channel is trace-preserving
+is_tp_result = is_tp(channel)  # Should return true for valid channels
+
+# Get Kraus operator representation
+kraus_matrices = kraus_matrices(channel)
+
+# Get superoperator matrix representation
+supermat = ordered_supermat(channel)  # Column-stacked representation</code></pre><h2 id="Predefined-Noise-Models"><a class="docs-heading-anchor" href="#Predefined-Noise-Models">Predefined Noise Models</a><a id="Predefined-Noise-Models-1"></a><a class="docs-heading-anchor-permalink" href="#Predefined-Noise-Models" title="Permalink"></a></h2><h3 id="Amplitude-Damping-Channel"><a class="docs-heading-anchor" href="#Amplitude-Damping-Channel">Amplitude Damping Channel</a><a id="Amplitude-Damping-Channel-1"></a><a class="docs-heading-anchor-permalink" href="#Amplitude-Damping-Channel" title="Permalink"></a></h3><p>Models energy dissipation (e.g., spontaneous emission).</p><pre><code class="language-julia hljs"># Create amplitude damping channel with damping rate γ
+γ = 0.1  # Damping rate (0 ≤ γ ≤ 1)
+ad_channel = AmplitudeDamping(1, γ=γ)  # Acting on qubit 1
+
+# The channel has Kraus operators:
+# K₀ = |0⟩⟨0| + √(1-γ)|1⟩⟨1|
+# K₁ = √γ|0⟩⟨1|</code></pre><h3 id="Phase-Damping-Channel"><a class="docs-heading-anchor" href="#Phase-Damping-Channel">Phase Damping Channel</a><a id="Phase-Damping-Channel-1"></a><a class="docs-heading-anchor-permalink" href="#Phase-Damping-Channel" title="Permalink"></a></h3><p>Models loss of quantum coherence without energy loss (dephasing).</p><pre><code class="language-julia hljs"># Create phase damping channel with parameter λ
+λ = 0.2  # Dephasing rate (0 ≤ λ ≤ 1)
+pd_channel = PhaseDamping(1, λ=λ)  # Acting on qubit 1
+
+# The channel has Kraus operators:
+# K₀ = √(1-λ/2)I
+# K₁ = √(λ/2)Z</code></pre><h3 id="Depolarizing-Channel"><a class="docs-heading-anchor" href="#Depolarizing-Channel">Depolarizing Channel</a><a id="Depolarizing-Channel-1"></a><a class="docs-heading-anchor-permalink" href="#Depolarizing-Channel" title="Permalink"></a></h3><p>Models isotropic noise that randomizes the quantum state.</p><pre><code class="language-julia hljs"># Create depolarizing channel with error probability p
+p = 0.05  # Error probability (0 ≤ p ≤ 1)
+depol_channel = Depolarizing(1, p=p)  # Acting on qubit 1
+
+# The channel applies:
+# ρ → (1-p)ρ + p/3 (XρX + YρY + ZρZ)</code></pre><h2 id="Channel-Operations"><a class="docs-heading-anchor" href="#Channel-Operations">Channel Operations</a><a id="Channel-Operations-1"></a><a class="docs-heading-anchor-permalink" href="#Channel-Operations" title="Permalink"></a></h2><h3 id="Composition"><a class="docs-heading-anchor" href="#Composition">Composition</a><a id="Composition-1"></a><a class="docs-heading-anchor-permalink" href="#Composition" title="Permalink"></a></h3><p>Channels can be composed with gates and other channels in circuits:</p><pre><code class="language-julia hljs">using QuantumCircuits
+
+# Create a circuit with gates and channels
+circuit = QCircuit()
+push!(circuit, XGate(1))
+push!(circuit, AmplitudeDamping(1, γ=0.1))
+push!(circuit, CNOTGate(1, 2))
+push!(circuit, Depolarizing(2, p=0.05))</code></pre><h3 id="Multi-Qubit-Channels"><a class="docs-heading-anchor" href="#Multi-Qubit-Channels">Multi-Qubit Channels</a><a id="Multi-Qubit-Channels-1"></a><a class="docs-heading-anchor-permalink" href="#Multi-Qubit-Channels" title="Permalink"></a></h3><p>Channels can act on multiple qubits by specifying position arrays:</p><pre><code class="language-julia hljs"># Create a two-qubit depolarizing channel
+depol_2q = Depolarizing([1, 2], p=0.01)  # Acts on qubits 1 and 2
+
+# Create amplitude damping on multiple qubits
+ad_multi = AmplitudeDamping([1, 3], γ=[0.1, 0.2])  # Different γ for each qubit</code></pre><h2 id="Mathematical-Background"><a class="docs-heading-anchor" href="#Mathematical-Background">Mathematical Background</a><a id="Mathematical-Background-1"></a><a class="docs-heading-anchor-permalink" href="#Mathematical-Background" title="Permalink"></a></h2><h3 id="Kraus-Representation"><a class="docs-heading-anchor" href="#Kraus-Representation">Kraus Representation</a><a id="Kraus-Representation-1"></a><a class="docs-heading-anchor-permalink" href="#Kraus-Representation" title="Permalink"></a></h3><p>A quantum channel Φ can be represented by Kraus operators {Kᵢ}:</p><pre><code class="nohighlight hljs">Φ(ρ) = Σᵢ Kᵢ ρ Kᵢ†</code></pre><p>where Σᵢ Kᵢ† Kᵢ = I (trace-preserving condition).</p><h3 id="Superoperator-Representation"><a class="docs-heading-anchor" href="#Superoperator-Representation">Superoperator Representation</a><a id="Superoperator-Representation-1"></a><a class="docs-heading-anchor-permalink" href="#Superoperator-Representation" title="Permalink"></a></h3><p>A quantum channel can also be represented as a superoperator matrix S:</p><pre><code class="nohighlight hljs">vec(Φ(ρ)) = S · vec(ρ)</code></pre><p>where vec(·) stacks matrix columns into a vector.</p><h2 id="Examples"><a class="docs-heading-anchor" href="#Examples">Examples</a><a id="Examples-1"></a><a class="docs-heading-anchor-permalink" href="#Examples" title="Permalink"></a></h2><h3 id="Simulating-Noise-in-a-Quantum-Circuit"><a class="docs-heading-anchor" href="#Simulating-Noise-in-a-Quantum-Circuit">Simulating Noise in a Quantum Circuit</a><a id="Simulating-Noise-in-a-Quantum-Circuit-1"></a><a class="docs-heading-anchor-permalink" href="#Simulating-Noise-in-a-Quantum-Circuit" title="Permalink"></a></h3><pre><code class="language-julia hljs">using QuantumCircuits
+
+function noisy_circuit()
+    circuit = QCircuit()
+    
+    # Initial Hadamard
+    push!(circuit, HGate(1))
+    
+    # Amplitude damping after preparation
+    push!(circuit, AmplitudeDamping(1, γ=0.05))
+    
+    # CNOT with depolarizing noise
+    push!(circuit, CNOTGate(1, 2))
+    push!(circuit, Depolarizing([1, 2], p=0.01))
+    
+    # Phase damping before measurement
+    push!(circuit, PhaseDamping(1, λ=0.1))
+    push!(circuit, PhaseDamping(2, λ=0.1))
+    
+    return circuit
+end</code></pre><h3 id="Custom-Channel-Construction"><a class="docs-heading-anchor" href="#Custom-Channel-Construction">Custom Channel Construction</a><a id="Custom-Channel-Construction-1"></a><a class="docs-heading-anchor-permalink" href="#Custom-Channel-Construction" title="Permalink"></a></h3><pre><code class="language-julia hljs">using LinearAlgebra
+
+function create_phase_flip_channel(p::Real, qubit::Int)
+    # Phase flip channel with probability p
+    # Kraus operators: √(1-p)I, √p)Z
+    
+    I_mat = Matrix{ComplexF64}(I, 2, 2)
+    Z_mat = Matrix{ComplexF64}([1 0; 0 -1])
+    
+    kraus_ops = [sqrt(1-p) * I_mat, sqrt(p) * Z_mat]
+    return QuantumMap(kraus_ops, [qubit])
+end
+
+# Usage
+phase_flip = create_phase_flip_channel(0.1, 1)</code></pre><h2 id="API-Reference"><a class="docs-heading-anchor" href="#API-Reference">API Reference</a><a id="API-Reference-1"></a><a class="docs-heading-anchor-permalink" href="#API-Reference" title="Permalink"></a></h2><div class="admonition is-warning"><header class="admonition-header">Missing docstring.</header><div class="admonition-body"><p>Missing docstring for <code>AbstractQuantumMap</code>. Check Documenter&#39;s build log for details.</p></div></div><div class="admonition is-warning"><header class="admonition-header">Missing docstring.</header><div class="admonition-body"><p>Missing docstring for <code>QuantumMap</code>. Check Documenter&#39;s build log for details.</p></div></div><div class="admonition is-warning"><header class="admonition-header">Missing docstring.</header><div class="admonition-body"><p>Missing docstring for <code>ordered_supermat</code>. Check Documenter&#39;s build log for details.</p></div></div><div class="admonition is-warning"><header class="admonition-header">Missing docstring.</header><div class="admonition-body"><p>Missing docstring for <code>kraus_matrices</code>. Check Documenter&#39;s build log for details.</p></div></div><div class="admonition is-warning"><header class="admonition-header">Missing docstring.</header><div class="admonition-body"><p>Missing docstring for <code>is_tp</code>. Check Documenter&#39;s build log for details.</p></div></div><h3 id="Predefined-Channels"><a class="docs-heading-anchor" href="#Predefined-Channels">Predefined Channels</a><a id="Predefined-Channels-1"></a><a class="docs-heading-anchor-permalink" href="#Predefined-Channels" title="Permalink"></a></h3><div class="admonition is-warning"><header class="admonition-header">Missing docstring.</header><div class="admonition-body"><p>Missing docstring for <code>AmplitudeDamping</code>. Check Documenter&#39;s build log for details.</p></div></div><div class="admonition is-warning"><header class="admonition-header">Missing docstring.</header><div class="admonition-body"><p>Missing docstring for <code>PhaseDamping</code>. Check Documenter&#39;s build log for details.</p></div></div><div class="admonition is-warning"><header class="admonition-header">Missing docstring.</header><div class="admonition-body"><p>Missing docstring for <code>Depolarizing</code>. Check Documenter&#39;s build log for details.</p></div></div></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../gates/">« Gates</a><a class="docs-footer-nextpage" href="../circuits/">Circuits »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.25 on <span class="colophon-date" title="Friday 10 April 2026 19:13">Friday 10 April 2026</span>. Using Julia version 1.6.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
